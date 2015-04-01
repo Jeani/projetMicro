@@ -57,3 +57,4 @@ void emitMessage(typeMessage * tableau);
 ****************/
 
 //TODO by Romain
+//édition
