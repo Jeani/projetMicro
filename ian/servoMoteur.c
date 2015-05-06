@@ -91,8 +91,14 @@ void avancer (int speed, int distance)
 	LPC_PWM1->TCR |= 1; // Counter Enable	
 	
 	// Attente du parcourt de la distance souhaitée ou de l'apparition d'un obstacle
-	while (TIM_GetCaptureValue(LPC_TIM0,TIM_COUNTER_INCAP0)<88*distance/perim || TIM_GetCaptureValue(LPC_TIM1,TIM_COUNTER_INCAP0)<88*distance/perim) // ajouter arret_obligatoire(distance()) == 2 pour la gestion d'obstacle
-	{}
+	while ((TIM_GetCaptureValue(LPC_TIM0,TIM_COUNTER_INCAP0)<88*distance/perim || TIM_GetCaptureValue(LPC_TIM1,TIM_COUNTER_INCAP0)<88*distance/perim) && detection() != 2)
+	{
+		if (detection() == 1) // On est à moins de 30cm d'un obstacle donc on ralentit
+		{
+			PWM_MatchUpdate(LPC_PWM1, 2, (1.5+0.5*speed/200)*1000, PWM_MATCH_UPDATE_NOW); // Moteur gauche à speed/2
+			PWM_MatchUpdate(LPC_PWM1, 4, (1.5-0.5*speed/200)*1000, PWM_MATCH_UPDATE_NOW); // Moteur droit à speed/2
+		}
+	}
 	// Arrêt du robot
 	stop();
 
